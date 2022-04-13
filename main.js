@@ -29,3 +29,47 @@ function shadowRootTraverser(rootNode, callback, onlyElements=false) {
 		}
 	}
 }
+
+
+
+
+// breadth traverse, so it will go 1 level down every time, 
+function breadthTraverse(node, callback) {
+	var currentLevel = [node]
+	var nextLevel = []
+	var level = 0
+	
+	while(currentLevel.length > 0) {
+		// go through the current level
+		for(var i = 0; i < currentLevel.length; i++) {
+			var item = currentLevel[i]
+			// call the callback on the current node
+			callback(item, level)
+			
+			// Add the children of the current node to the next level
+			if(item.children) {
+				// push all the children onto the next level
+				Array.prototype.push.apply(nextLevel, item.childNodes)
+			}
+			
+			// check for shadow DOM
+			if(item.shadowRoot) {
+				Array.prototype.push.apply(nextLevel, item.shadowRoot.childNodes)
+			}
+		}
+		
+		currentLevel = nextLevel
+		nextLevel = []
+		level++
+	}
+}
+
+// in the following example: the execution order will be
+// [<head>, <body>]
+// [<meta charset="utf-8">,<meta name="viewport">, <title>, <h1>]
+// ['title', 'welcome to my website']
+// and also a bunch of other text nodes which are the spacings between the other nodes, where 
+// the text value is just a bunch of whitespace, which we could filter of course.
+breadthTraverse(document.documentElement, function(node, level) {
+	console.log(node, level)
+})
