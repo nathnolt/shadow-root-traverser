@@ -33,7 +33,7 @@ function shadowRootTraverser(rootNode, callback, onlyElements=false) {
 
 
 
-// breadth traverse, so it will go 1 level down every time, 
+// breadth traverse, so it will go 1 level down every time.
 function breadthTraverse(node, callback) {
 	var currentLevel = [node]
 	var nextLevel = []
@@ -71,5 +71,16 @@ function breadthTraverse(node, callback) {
 // and also a bunch of other text nodes which are the spacings between the other nodes, where 
 // the text value is just a bunch of whitespace, which we could filter of course.
 breadthTraverse(document.documentElement, function(node, level) {
+	console.log(node, level)
+})
+
+// this one declines nodes without any text.
+breadthTraverse(document.documentElement, function(node, level) {
+	
+	// Decline text nodes without text
+	if(node.nodeType === Node.TEXT_NODE && !/\S/.test(node.nodeValue)) {
+		return
+	}
+	
 	console.log(node, level)
 })
